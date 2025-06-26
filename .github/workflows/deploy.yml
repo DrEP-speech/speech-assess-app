@@ -1,0 +1,36 @@
+name: 🚀 Auto Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Install Server Dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: 🧪 Run Tests (optional)
+        run: |
+          echo "Add your tests here"
+
+      - name: 🚀 Trigger Render Deploy
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+      - name: 🔁 Trigger Vercel Redeploy
+        run: |
+          curl -X POST ${{ secrets.VERCEL_REDEPLOY_HOOK }}

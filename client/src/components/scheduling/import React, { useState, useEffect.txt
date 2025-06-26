@@ -1,0 +1,68 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const TherapistAvailabilityEditor = () => {
+  const [availability, setAvailability] = useState([]);
+  const [date, setDate] = useState('');
+  const [slot, setSlot] = useState('');
+
+  useEffect(() => {
+    axios.get('/api/availability').then((res) => setAvailability(res.data));
+  }, []);
+
+  const addSlot = async () => {
+    const existing = availability.find((a) => a.date === date);
+    let updated;
+
+    if (existing) {
+      updated = {
+        ...existing,
+        slots: [...new Set([...existing.slots, slot])]
+      };
+      await axios.put(`/api/availability/${existing._id}`, updated);
+    } else {
+      updated = { date, slots: [slot] };
+      await axios.post('/api/availability', updated);
+    }
+
+    const { data } = await axios.get('/api/availability');
+    setAvailability(data);
+    setDate('');
+    setSlot('');
+  };
+
+  return (
+    <div className="p-6 bg-white shadow rounded-xl">
+      <h2 className="text-xl font-bold mb-4">🧑‍⚕️ Edit Therapist Availability</h2>
+      <div className="flex gap-2 mb-4">
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <input
+          type="time"
+          value={slot}
+          onChange={(e) => setSlot(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <button
+          onClick={addSlot}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Add Slot
+        </button>
+      </div>
+      <ul className="space-y-2">
+        {availability.map((a) => (
+          <li key={a._id}>
+            <strong>{a.date}</strong>: {a.slots.join(', ')}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default TherapistAvailabilityEditor;

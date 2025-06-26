@@ -1,0 +1,39 @@
+
+import React, { useState } from "react";
+import axios from "axios";
+
+const UploadEvaluator = () => {
+  const [file, setFile] = useState(null);
+  const [transcript, setTranscript] = useState("");
+
+  const handleFileChange = (e) => setFile(e.target.files[0]);
+
+  const handleUpload = async () => {
+    if (!file) return alert("Please upload an audio file.");
+    const formData = new FormData();
+    formData.append("audio", file);
+
+    try {
+      const res = await axios.post("/api/transcribe", formData);
+      setTranscript(res.data.transcript);
+    } catch (err) {
+      alert("Transcription failed.");
+      console.error(err);
+    }
+  };
+
+  return (
+    <div style={{ margin: "20px" }}>
+      <input type="file" accept="audio/*" onChange={handleFileChange} />
+      <button onClick={handleUpload} style={{ marginLeft: "10px" }}>
+        Transcribe
+      </button>
+      <div style={{ marginTop: "10px" }}>
+        <strong>Transcript:</strong>
+        <p>{transcript}</p>
+      </div>
+    </div>
+  );
+};
+
+export default UploadEvaluator;

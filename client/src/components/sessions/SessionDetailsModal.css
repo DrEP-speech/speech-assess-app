@@ -1,0 +1,32 @@
+.session-details-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.session-details-container h2 {
+  margin-top: 0;
+}
+
+.summary-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  background-color: #def4e3;
+  color: #207a33;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+.regenerate-button {
+  margin-top: 10px;
+  background-color: #e6f2ff;
+  border: 1px solid #3399ff;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.close-button {
+  margin-top: 20px;
+  padding: 6px 12px;
+}

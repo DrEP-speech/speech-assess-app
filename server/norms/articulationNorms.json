@@ -1,0 +1,8 @@
+{
+  "4": { "mean": 85, "stdDev": 10 },
+  "5": { "mean": 90, "stdDev": 10 },
+  "6": { "mean": 95, "stdDev": 10 },
+  "7": { "mean": 100, "stdDev": 15 },
+  "8": { "mean": 105, "stdDev": 15 },
+  "9": { "mean": 110, "stdDev": 15 }
+}

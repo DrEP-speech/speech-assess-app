@@ -1,0 +1,40 @@
+const nodemailer = require('nodemailer');
+const Therapist = require('../models/Therapist');
+const Client = require('../models/Client');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function notifyTherapistOfParentMessage(childId, messageContent) {
+  const client = await Client.findById(childId).populate('therapistId');
+  if (!client?.therapistId?.email) return;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: client.therapistId.email,
+    subject: `📨 New message from ${client.parentName || 'a parent'}`,
+    text: `They said:\n\n${messageContent}`,
+  });
+}
+
+async function notifyTherapistOfCheckIn(childId, sessionDate) {
+  const client = await Client.findById(childId).populate('therapistId');
+  if (!client?.therapistId?.email) return;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: client.therapistId.email,
+    subject: `📅 Parent Check-In Scheduled for ${client.name}`,
+    text: `A parent check-in has been scheduled for ${sessionDate}.`,
+  });
+}
+
+module.exports = {
+  notifyTherapistOfParentMessage,
+  notifyTherapistOfCheckIn,
+};

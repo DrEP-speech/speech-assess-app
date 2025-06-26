@@ -1,0 +1,93 @@
+// TherapistDashboard.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import SessionDetailsModal from '../components/session/SessionDetailsModal';
+
+const [filterStatus, setFilterStatus] = useState('all');
+const [searchTerm, setSearchTerm] = useState('');
+const TherapistDashboard = ({ currentUser }) => {
+  const [sessions, setSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
+
+  const fetchSessions = async () => {
+    try {
+      const response = await axios.get('/api/schedule/therapist');
+      setSessions(response.data);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+    }
+  };
+
+  const openSession = (session) => {
+    setSelectedSession(session);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedSession(null);
+  };
+<div className="mb-4 flex flex-wrap gap-4 items-center">
+  <input
+    type="text"
+    placeholder="Search client name"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="p-2 border rounded shadow-sm"
+  />
+
+  <select
+    value={filterStatus}
+    onChange={(e) => setFilterStatus(e.target.value)}
+    className="p-2 border rounded"
+  >
+    <option value="all">All</option>
+    <option value="pending">Pending</option>
+    <option value="completed">Completed</option>
+  </select>
+</div>
+
+
+const filteredSessions = sessions
+  .filter((s) =>
+    (filterStatus === 'all' || s.status === filterStatus) &&
+    s.clientName.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by upcoming date
+
+{filteredSessions.length === 0 ? (
+  <p className="text-gray-600">No matching sessions.</p>
+) : (
+  <ul className="space-y-4">
+    {filteredSessions.map((session) => (
+      <li
+        key={session._id}
+        className="border rounded p-4 shadow hover:bg-gray-50 cursor-pointer"
+        onClick={() => openSession(session)}
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="font-semibold text-lg">{session.clientName}</h2>
+            <p className="text-sm text-gray-600">
+              {new Date(session.date).toLocaleString()} &mdash; {session.sessionType}
+            </p>
+          </div>
+          <span
+            className={`text-xs px-2 py-1 rounded ${
+              session.status === 'completed'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-yellow-100 text-yellow-700'
+            }`}
+          >
+            {session.status || 'pending'}
+          </span>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}

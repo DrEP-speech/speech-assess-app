@@ -1,0 +1,19 @@
+import React, { useEffect } from "react";
+
+const NarratedPrompt = ({ promptText }) => {
+  useEffect(() => {
+    if (promptText) {
+      const utterance = new SpeechSynthesisUtterance(promptText);
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [promptText]);
+
+  return (
+    <div style={{ margin: "20px 0", textAlign: "center" }}>
+      <strong>🗣️ AI Narrated Prompt:</strong>
+      <p>{promptText}</p>
+    </div>
+  );
+};
+
+export default NarratedPrompt;

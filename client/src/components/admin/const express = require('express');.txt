@@ -1,0 +1,33 @@
+const express = require('express');
+const router = express.Router();
+const Session = require('../models/ScheduledSession');
+
+// Update session details: notes, soap, flags, icdCode, cptCode
+router.put('/session-details/:id', async (req, res) => {
+  try {
+    const { notes, soap, flags, icdCode, cptCode } = req.body;
+
+    const session = await Session.findById(req.params.id);
+    if (!session) return res.status(404).json({ message: 'Session not found' });
+
+    session.notes = notes || '';
+    session.soap = soap || '';
+    session.flags = flags || [];
+    session.icdCode = icdCode || '';
+    session.cptCode = cptCode || '';
+
+    // Auto alert triggers
+    session.autoAlerts = {
+      missingNotes: !session.notes.trim(),
+      missingAttendance: session.attended === false
+    };
+
+    await session.save();
+    res.json({ message: 'Session details updated', session });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error updating session details' });
+  }
+});
+
+module.exports = router;

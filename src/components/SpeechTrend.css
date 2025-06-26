@@ -1,0 +1,9 @@
+
+.speech-trend-container {
+  margin-top: 20px;
+  text-align: center;
+}
+canvas {
+  max-width: 100%;
+  margin: auto;
+}
